@@ -1,71 +1,98 @@
 #include "monty.h"
 
+/**
+ * free_myglo - Frees the global variables.
+ *
+ * Return: No return.
+ */
+void free_myglo(void)
+{
+	free_dlistint(myglo.head);
+	free(myglo.buffer);
+	fclose(myglo.fd);
+}
+
+/**
+ * start_myglo - Initializes the global variables.
+ *
+ * @fd: File descriptor.
+ * Return: No return.
+ */
+void start_myglo(FILE *fd)
+{
+	myglo.lifo = 1;
+	myglo.cont = 1;
+	myglo.arg = NULL;
+	myglo.head = NULL;
+	myglo.fd = fd;
+	myglo.buffer = NULL;
+}
+
+/**
+ * check_input - Checks if the file exists and if the file can be opened.
+ *
+ * @argc: Argument count.
+ * @argv: Argument vector.
+ * Return: File struct.
+ */
+FILE *check_input(int argc, char *argv[])
+{
+	FILE *fd;
+
+	if (argc == 1 || argc > 2)
+	{
+		dprintf(2, "USAGE: monty file\n");
+		exit(EXIT_FAILURE);
+	}
+
+	fd = fopen(argv[1], "r");
+
+	if (fd == NULL)
+	{
+		dprintf(2, "Error: Can't open file %s\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+
+	return (fd);
+}
+
+/**
+ * main - Entry point.
+ *
+ * @argc: Argument count.
+ * @argv: Argument vector.
+ * Return: 0 on success.
+ */
 int main(int argc, char *argv[])
 {
-	int mode;
-	char *script_filename = argv[1];
-	FILE *script_fd = fopen(script_filename, "r");
-	stack_t *stack;
+	FILE *fd;
+	size_t size = 256;
+	ssize_t nlines = 0;
+	char *lines[2] = {NULL, NULL};
 
-	if (argc != 2)
+	fd = check_input(argc, argv);
+	start_myglo(fd);
+	nlines = getline(&myglo.buffer, &size, fd);
+	while (nlines != -1)
 	{
-		fprintf(stderr, "Usage: %s <monty_script_file>\n", argv[0]);
-		return EXIT_FAILURE;
+		lines[0] = _strtoky(myglo.buffer, " \t\n");
+		if (lines[0] && lines[0][0] != '#')
+		{
+			f = get_opcodes(lines[0]);
+			{
+				dprintf(2, "L%u: ", myglo.cont);
+				dprintf(2, "unknown instruction %s\n", lines[0]);
+				free_myglo();
+				exit(EXIT_FAILURE);
+			}
+			myglo.arg = _strtoky(NULL, " \t\n");
+			f(&myglo.head, myglo.cont);
+		}
+		nlines = getline(&myglo.buffer, &size, fd);
+		myglo.cont++;
 	}
 
-	script_filename = argv[1];
-	script_fd = fopen(script_filename, "r");
+	free_myglo();
 
-	if (script_fd == NULL)
-	{
-		fprintf(stderr, "Error: Can't open file %s\n", script_filename);
-		return EXIT_FAILURE;
-	}
-
-	stack = NULL;
-	if (init_stack(&stack) != 0) {
-		fprintf(stderr, "Error: Stack initialization failed\n");
-		fclose(script_fd);
-		return EXIT_FAILURE;
-	}
-
-	mode = check_mode(&stack);
-	if (mode == -1) {
-		fprintf(stderr, "Error: Invalid stack mode\n");
-		fclose(script_fd);
-		free_stack(&stack);
-		return EXIT_FAILURE;
-	}
-
-	if (!run_monty(script_fd))
-	{
-		fclose(script_fd);
-		free_stack(&stack);
-		free_tokens();
-		return EXIT_FAILURE;
-	}
-
-	fclose(script_fd);
-	free_stack(&stack);
-	free_tokens();
-
-	return EXIT_SUCCESS;
-}
-/**
- * set_op_tok_error - Set the error code for the current operation token.
- * @error_code: The error code to set.
- */
-void set_op_tok_error(int error_code) {
-	op_toks[0] = NULL;
-}
-void your_function_name()
-{
-	instruction_t instruction[] = {
-		{"push", monty_push},
-		{"pall", monty_pall},
-		{"pint", monty_pint}, /* Add this line */
-		/* Add other opcodes here */
-		{NULL, NULL}
-	};
-
+	return (0);
 }
