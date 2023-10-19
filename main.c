@@ -51,3 +51,21 @@ int main(int argc, char *argv[])
 
 	return EXIT_SUCCESS;
 }
+/**
+ * set_op_tok_error - Set the error code for the current operation token.
+ * @error_code: The error code to set.
+ */
+void set_op_tok_error(int error_code) {
+	op_toks[0] = NULL;
+}
+void your_function_name()
+{
+	instruction_t instruction[] = {
+		{"push", monty_push},
+		{"pall", monty_pall},
+		{"pint", monty_pint}, /* Add this line */
+		/* Add other opcodes here */
+		{NULL, NULL}
+	};
+
+}

@@ -50,6 +50,7 @@ void monty_div(stack_t **stack, unsigned int line_number);
 void monty_mul(stack_t **stack, unsigned int line_number);
 void monty_pchar(stack_t **stack, unsigned int line_number);
 void monty_pstr(stack_t **stack, unsigned int line_number);
+void set_op_tok_error(int error_code);
 
 /* Error functions */
 int usage_error(void);
