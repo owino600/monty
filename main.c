@@ -2,6 +2,7 @@
 
 int main(int argc, char *argv[])
 {
+	int mode;
 	char *script_filename = argv[1];
 	FILE *script_fd = fopen(script_filename, "r");
 	stack_t *stack;
@@ -22,11 +23,14 @@ int main(int argc, char *argv[])
 	}
 
 	stack = NULL;
+	if (init_stack(&stack) != 0) {
+		fprintf(stderr, "Error: Stack initialization failed\n");
+		fclose(script_fd);
+		return EXIT_FAILURE;
+	}
 
-	init_stack(&stack);
-
-	if (check_mode(&stack) != STACK)
-	{
+	mode = check_mode(&stack);
+	if (mode == -1) {
 		fprintf(stderr, "Error: Invalid stack mode\n");
 		fclose(script_fd);
 		free_stack(&stack);
@@ -37,6 +41,7 @@ int main(int argc, char *argv[])
 	{
 		fclose(script_fd);
 		free_stack(&stack);
+		free_tokens();
 		return EXIT_FAILURE;
 	}
 
