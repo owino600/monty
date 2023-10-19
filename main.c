@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
 	size_t size = 256;
 	ssize_t nlines = 0;
 	char *lines[2] = {NULL, NULL};
+	void (*f)(stack_t **, unsigned int) = get_opcodes(lines[0]);
 
 	fd = check_input(argc, argv);
 	start_myglo(fd);
